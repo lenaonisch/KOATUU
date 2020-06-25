@@ -16,6 +16,7 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "react-sortable-tree": "^2.7.1",
+    "react-sortable-tree-theme-full-node-drag": "^1.1.0",
     "react-sortable-tree-theme-minimal": "0.0.14",
     "semantic-ui-react": "^0.88.2",
     "typescript": "^3.7.5",

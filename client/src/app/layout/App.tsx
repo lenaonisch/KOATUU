@@ -4,13 +4,9 @@ import { IActivity } from "../models/activity";
 import NavBar from "../../features/nav/NavBar";
 import { ActivityDashboard } from "../../features/activities/dashboard/ActivityDashboard";
 import agents from "../api/agents";
-import {
-  SortableTreeWithoutDndContext as SortableTree,
-  TreeItem,
-} from "react-sortable-tree";
 import { ILocality } from "../models/locality";
 import Tree from "../../features/tree/sortableTree";
-import "react-sortable-tree/style.css"; // This only needs to be imported once in your app
+
 
 const App = () => {
   const [activities, setActivities] = useState<IActivity[]>([]);
