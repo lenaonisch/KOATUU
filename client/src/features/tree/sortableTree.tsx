@@ -107,13 +107,13 @@ export default class Tree extends Component<{}, any> {
 
     return (
       <div>
-        <label>
+        <label style={{ marginTop: "1em" }}>
         Новое имя:
           <input
             id="new-locality"
             type="text"
             placeholder="new locality..."
-            style={{ fontSize: "1rem" }}
+            style={{ fontSize: "1rem", marginTop: "1em", marginLeft: "10px"}}
             value={newName}
             onChange={(event) =>
               this.setState({ newName: event.target.value })
@@ -122,7 +122,7 @@ export default class Tree extends Component<{}, any> {
           </label>
         <br/>    
         <form
-          style={{ display: "inline-block" }}
+          style={{ display: "inline-block", marginTop: "1em" }}
           onSubmit={(event) => {
             event.preventDefault();
           }}
@@ -231,6 +231,32 @@ export default class Tree extends Component<{}, any> {
             }
           />
         </div>
+
+        <button style={{ marginTop: "1em" }}
+          onClick={() =>
+            this.setState(state => ({
+              treeData: state.treeData.concat({
+                title: state.newName,
+              }),
+            }))
+          }
+        >
+          Add more
+        </button>
+        <br />
+        {/* <label htmlFor="addAsFirstChild">
+          Add new nodes at start
+          <input
+            name="addAsFirstChild"
+            type="checkbox"
+            checked={this.state.addAsFirstChild}
+            onChange={() =>
+              this.setState(state => ({
+                addAsFirstChild: !state.addAsFirstChild,
+              }))
+            }
+          />
+        </label> */}
       </div>
     );
   }
