@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import SortableTree, { SearchData, defaultSearchMethod } from "react-sortable-tree";
+import SortableTree, { SearchData, defaultSearchMethod, addNodeUnderParent, removeNodeAtPath } from "react-sortable-tree";
 import "react-sortable-tree/style.css"; // This only needs to be imported once in your app
 import { ILocality } from "../../app/models/locality";
 import agents from "../../app/api/agents";
@@ -57,6 +57,7 @@ export default class Tree extends Component<{}, any> {
   constructor(props?: any) {
     super(props);
     this.state = {
+      newName: "",
       searchString: "",
       searchFocusIndex: 0,
       searchFoundCount: null,
@@ -77,8 +78,10 @@ export default class Tree extends Component<{}, any> {
   }
 
   render() {
-    const { searchString, searchFocusIndex, searchFoundCount } = this.state;
+    const { newName, searchString, searchFocusIndex, searchFoundCount } = this.state;
 
+    const getNodeKey = ({ treeIndex }) => treeIndex;
+    
     // Case insensitive search of `node.title`
     const customSearchMethod = ({ node, searchQuery }: SearchData) =>
       {
@@ -104,6 +107,20 @@ export default class Tree extends Component<{}, any> {
 
     return (
       <div>
+        <label>
+        Новое имя:
+          <input
+            id="new-locality"
+            type="text"
+            placeholder="new locality..."
+            style={{ fontSize: "1rem" }}
+            value={newName}
+            onChange={(event) =>
+              this.setState({ newName: event.target.value })
+            }
+          />
+          </label>
+        <br/>    
         <form
           style={{ display: "inline-block" }}
           onSubmit={(event) => {
@@ -149,6 +166,43 @@ export default class Tree extends Component<{}, any> {
           <SortableTree
             treeData={this.state.treeData}
             onChange={(treeData) => this.setState({ treeData })}
+
+            generateNodeProps={({ node, path }) => ({
+              buttons: [
+                <button
+                  onClick={() =>
+                    this.setState(state => ({
+                      treeData: addNodeUnderParent({
+                        treeData: state.treeData,
+                        parentKey: path[path.length - 1],
+                        expandParent: true,
+                        getNodeKey,
+                        newNode: {
+                          title : state.newName
+                        },
+                        addAsFirstChild: state.addAsFirstChild,
+                      }).treeData,
+                    }))
+                  }
+                >
+                  Add Child
+                </button>,
+                <button
+                  onClick={() =>
+                    this.setState(state => ({
+                      treeData: removeNodeAtPath({
+                        treeData: state.treeData,
+                        path,
+                        getNodeKey,
+                      }),
+                    }))
+                  }
+                >
+                  Remove
+                </button>,
+              ],
+            })}
+            
             //
             // Custom comparison for matching during search.
             // This is optional, and defaults to a case sensitive search of
