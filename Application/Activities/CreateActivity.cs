@@ -31,16 +31,16 @@ namespace Application.Activities
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                //var activity = _context.Activities.Add(
-                //    new Activity()
-                //    {
-                //        Title = request.Title,
-                //        Description = request.Title,
-                //        Category = request.Category,
-                //        Date = request.Date,
-                //        City = request.City,
-                //        Vanue = request.Vanue
-                //    });
+                var activity = _context.Activities.Add(
+                    new Activity()
+                    {
+                        Title = request.Title,
+                        Description = request.Title,
+                        Category = request.Category,
+                        Date = request.Date,
+                        City = request.City,
+                        Vanue = request.Vanue
+                    });
                 var success = await _context.SaveChangesAsync() > 0 ;
 
                 if (success) return Unit.Value;

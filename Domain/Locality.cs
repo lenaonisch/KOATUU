@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace Domain
@@ -6,12 +5,10 @@ namespace Domain
     public class Locality
     {
         public long Id { get;set;}
-        public string Title { get; set; }
-        public char? Category { get; set; }
+        public string Title {get;set;}
+        public bool Expanded { get { return true; } }
+        public List<Locality> Children { get; set; }
 
-        [JsonIgnore]
-        public virtual LocalityNode Ancestor { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<LocalityNode> Children { get; set; }
+        public long? ParentId { get; set; }
     }
 }

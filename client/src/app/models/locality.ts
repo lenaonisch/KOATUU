@@ -1,9 +1,6 @@
-import { TreeItem } from "react-sortable-tree";
-
-export interface ILocality extends TreeItem {
+export interface ILocality {
     id: number;
     title: string;
     expanded : boolean;
-    category: string;
     children : ILocality[];
 }

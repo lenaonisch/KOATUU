@@ -20,10 +20,9 @@ public class GetCategories
 
         public async Task<IList<string>> Handle(Query request, CancellationToken cancellationToken)
         {
-            //var data = _dataContext.Activities.Select(a => a.Category);
-            //var list = await data.Distinct().ToListAsync();
-            //return list;
-            return new List<string>();
+            var data = _dataContext.Activities.Select(a => a.Category);
+            var list = await data.Distinct().ToListAsync();
+            return list;
         }
     }
 }
