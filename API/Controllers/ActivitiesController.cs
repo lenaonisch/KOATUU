@@ -26,7 +26,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IList<Activity>>> List()
         {
-            return Ok(await _mediator.Send(new GetActivitiesList.Query()));
+            return Ok(await _mediator.Send(new GetLocalitiesList.Query()));
         }
 
         [HttpGet("{id}")]

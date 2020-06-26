@@ -29,12 +29,16 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
             services.AddDbContext<DataContext>(opt => 
                 {
                     opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
                 }
             );
-            services.AddMediatR(typeof(GetActivitiesList.Handler).Assembly);
+            services.AddMediatR(typeof(GetLocalitiesList.Handler).Assembly);
             services.AddControllers();
         }
 
