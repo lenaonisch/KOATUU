@@ -57,6 +57,7 @@ export default class Tree extends Component<{}, any> {
   constructor(props?: any) {
     super(props);
     this.state = {
+      newId: 0,
       newName: "",
       searchString: "",
       searchFocusIndex: 0,
@@ -78,10 +79,30 @@ export default class Tree extends Component<{}, any> {
   }
 
   render() {
-    const { newName, searchString, searchFocusIndex, searchFoundCount } = this.state;
+    const { newId, newName, searchString, searchFocusIndex, searchFoundCount } = this.state;
 
     const getNodeKey = ({ treeIndex }) => treeIndex;
     
+  
+    // const handleEditActivity = (activity: ILocality) => {
+    //   agents.Localities.edit(activity).then(() => {
+    //     setActivities([
+    //       ...activities.filter((t) => t.id !== activity.id),
+    //       activity,
+    //     ]);
+    //     setSelectedActivity(activity);
+    //     setEditMode(false);
+    //   });
+    // };
+  
+    // const handleDeleteActivity = (id: string) => {
+    //   agents.Localities.delete(id).then(() => {
+    //     setActivities([...activities.filter((t) => t.id !== id)]);
+    //     setSelectedActivity(null);
+    //     setEditMode(false);
+    //   });
+    // };
+
     // Case insensitive search of `node.title`
     const customSearchMethod = ({ node, searchQuery }: SearchData) =>
       {
@@ -108,6 +129,19 @@ export default class Tree extends Component<{}, any> {
     return (
       <div>
         <label style={{ marginTop: "1em" }}>
+        Новый Id:
+          <input
+            id="new-id"
+            type="text"
+            placeholder="new id..."
+            style={{ fontSize: "1rem", marginTop: "1em", marginLeft: "10px"}}
+            value={newId}
+            onChange={(event) =>
+              this.setState({ newId: event.target.value })
+            }
+          />
+        </label>
+        <label style={{ marginTop: "1em" }}>
         Новое имя:
           <input
             id="new-locality"
@@ -119,7 +153,7 @@ export default class Tree extends Component<{}, any> {
               this.setState({ newName: event.target.value })
             }
           />
-          </label>
+        </label>
         <br/>    
         <form
           style={{ display: "inline-block", marginTop: "1em" }}
@@ -170,20 +204,30 @@ export default class Tree extends Component<{}, any> {
             generateNodeProps={({ node, path }) => ({
               buttons: [
                 <button
-                  onClick={() =>
-                    this.setState(state => ({
-                      treeData: addNodeUnderParent({
-                        treeData: state.treeData,
-                        parentKey: path[path.length - 1],
-                        expandParent: true,
-                        getNodeKey,
-                        newNode: {
-                          title : state.newName
-                        },
-                        addAsFirstChild: state.addAsFirstChild,
-                      }).treeData,
+                  onClick={() => {
+                    
+                    let locality : ILocality = {
+                      id : this.state.newId,
+                      title: this.state.newName,
+                      parentId: this.state.treeData[path[path.length - 1]].id
+                    };
+                    
+                    agents.Localities.add(locality).then(() => {
+                      this.setState(state => ({
+                        treeData: addNodeUnderParent({
+                          treeData: state.treeData,
+                          parentKey: path[path.length - 1],
+                          expandParent: true,
+                          getNodeKey,
+                          newNode: {
+                            title : state.newName
+                          },
+                          addAsFirstChild: state.addAsFirstChild,
+                        }).treeData,
                     }))
-                  }
+                  
+                  })
+                }}
                 >
                   Add Child
                 </button>,

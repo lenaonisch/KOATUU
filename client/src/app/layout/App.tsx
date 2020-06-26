@@ -30,32 +30,25 @@ const App = () => {
     setSelectedActivity(null);
   };
 
-  const handleCreateActivity = (activity: IActivity) => {
-    agents.Activities.add(activity).then(() => {
-      setActivities([...activities, activity]);
-      setSelectedActivity(activity);
-      setEditMode(false);
-    });
-  };
 
-  const handleEditActivity = (activity: IActivity) => {
-    agents.Activities.edit(activity).then(() => {
-      setActivities([
-        ...activities.filter((t) => t.id !== activity.id),
-        activity,
-      ]);
-      setSelectedActivity(activity);
-      setEditMode(false);
-    });
-  };
+  // const handleEditActivity = (activity: IActivity) => {
+  //   agents.Activities.edit(activity).then(() => {
+  //     setActivities([
+  //       ...activities.filter((t) => t.id !== activity.id),
+  //       activity,
+  //     ]);
+  //     setSelectedActivity(activity);
+  //     setEditMode(false);
+  //   });
+  // };
 
-  const handleDeleteActivity = (id: string) => {
-    agents.Activities.delete(id).then(() => {
-      setActivities([...activities.filter((t) => t.id !== id)]);
-      setSelectedActivity(null);
-      setEditMode(false);
-    });
-  };
+  // const handleDeleteActivity = (id: string) => {
+  //   agents.Activities.delete(id).then(() => {
+  //     setActivities([...activities.filter((t) => t.id !== id)]);
+  //     setSelectedActivity(null);
+  //     setEditMode(false);
+  //   });
+  // };
 
   // useEffect(() => {
   //     agents.Activities.list()

@@ -28,5 +28,11 @@ namespace API.Controllers
         {
             return Ok(await _mediator.Send(new GetLocalitiesList.Query()));
         }
+
+        [HttpPost]
+        public async Task<ActionResult<Unit>> Add(CreateLocality.Command command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
     }
 }
