@@ -6,16 +6,16 @@ using Persistence;
 
 namespace Application.Activities
 {
-    public class DeleteActivity
+    public class DeleteLocality
     {
         public class Command : IRequest 
         {
-            public Command(Guid id)
+            public Command(long id)
             {
                 Id = id;
             }
 
-            public Guid Id { get; set; }
+            public long Id { get; set; }
         }
 
         public class Handler : IRequestHandler<Command>
@@ -28,13 +28,13 @@ namespace Application.Activities
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                //var item = await _context.Activities.FindAsync(request.Id);
-                //if (item == null)
-                //{
-                //    throw new Exception($"Item with Id {request.Id} wasn't found");
-                //}
+                var item = await _context.Localities.FindAsync(request.Id);
+                if (item == null)
+                {
+                   throw new Exception($"Item with Id {request.Id} wasn't found");
+                }
 
-                //_context.Activities.Remove(item);
+                _context.Localities.Remove(item);
                 if (await _context.SaveChangesAsync() > 0)
                 {
                     return Unit.Value;

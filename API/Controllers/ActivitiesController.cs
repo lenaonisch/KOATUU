@@ -42,15 +42,15 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<Unit>> Edit(EditActivity.Command command)
+        public async Task<ActionResult<Unit>> Edit(/*EditActivity.Command command*/)
         {
-            return Ok(await _mediator.Send(command));
+            return Ok(/*await _mediator.Send(command)*/);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Unit>> Delete(Guid id)
         {
-            return Ok(await _mediator.Send(new DeleteActivity.Command(id)));
+            return Ok(/*await _mediator.Send(new DeleteActivity.Command(id))*/);
         }
 
         [HttpGet("/Categories")]

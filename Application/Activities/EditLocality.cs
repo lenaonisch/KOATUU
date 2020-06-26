@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
@@ -7,7 +7,7 @@ using Persistence;
 
 namespace Application.Activities
 {
-    public class CreateLocality
+    public class EditLocality
     {
         public class Command : IRequest
         {
@@ -28,15 +28,17 @@ namespace Application.Activities
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var activity = _context.Localities.Add(
-                   new Locality()
-                   {
-                       Id = request.Id,
-                       Title = request.Title,
-                       Category = request.Category,
-                       ParentId = request.ParentId
-                   });
-                var success = await _context.SaveChangesAsync() > 0 ;
+                var locality = await _context.Localities.FindAsync(request.Id);
+                if (locality == null)
+                {
+                   throw new Exception($"Can't find locality with Id {request.Id}");
+                }
+
+                locality.Title = request.Title ?? locality.Title;
+                locality.Category = request.Category ?? locality.Category;
+                locality.ParentId = request.ParentId ?? locality.ParentId;
+                
+                var success = await _context.SaveChangesAsync() > 0;
 
                 if (success) return Unit.Value;
 

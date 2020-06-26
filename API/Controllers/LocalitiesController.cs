@@ -34,5 +34,17 @@ namespace API.Controllers
         {
             return Ok(await _mediator.Send(command));
         }
+
+        [HttpPut]
+        public async Task<ActionResult<Unit>> Edit(EditLocality.Command command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Unit>> Delete(long id)
+        {
+            return Ok(await _mediator.Send(new DeleteLocality.Command(id)));
+        }
     }
 }

@@ -1,59 +1,15 @@
 import React, { Component } from "react";
-import SortableTree, { SearchData, defaultSearchMethod, addNodeUnderParent, removeNodeAtPath } from "react-sortable-tree";
+import SortableTree, {
+  SearchData,
+  defaultSearchMethod,
+  addNodeUnderParent,
+  removeNodeAtPath,
+} from "react-sortable-tree";
 import "react-sortable-tree/style.css"; // This only needs to be imported once in your app
 import { ILocality } from "../../app/models/locality";
 import agents from "../../app/api/agents";
 
-
 export default class Tree extends Component<{}, any> {
-  // constructor(props) {
-  //   super(props);
-
-  //   const title = 'Hay';
-
-  //   // For generating a haystack (you probably won't need to do this)
-  //   const getStack = (left, hasNeedle = false) => {
-  //     if (left === 0) {
-  //       return hasNeedle ? { title: 'Needle' } : { title };
-  //     }
-
-  //     return {
-  //       title,
-  //       children: [
-  //         {
-  //           title,
-  //           children: [getStack(left - 1, hasNeedle && left % 2), { title }],
-  //         },
-  //         { title },
-  //         {
-  //           title,
-  //           children: [
-  //             { title },
-  //             getStack(left - 1, hasNeedle && (left + 1) % 2),
-  //           ],
-  //         },
-  //       ],
-  //     };
-  //   };
-
-  //   this.state = {
-  //     searchString: '',
-  //     searchFocusIndex: 0,
-  //     searchFoundCount: null,
-  //     treeData: [
-  //       {
-  //         title: 'Haystack',
-  //         children: [
-  //           getStack(3, true),
-  //           getStack(3),
-  //           { title },
-  //           getStack(2, true),
-  //         ],
-  //       },
-  //     ],
-  //   };
-  // }
-
   constructor(props?: any) {
     super(props);
     this.state = {
@@ -67,11 +23,9 @@ export default class Tree extends Component<{}, any> {
   }
 
   componentDidMount() {
-   
-    if (this.state.treeData.length == 0){
+    if (this.state.treeData.length == 0) {
       agents.Localities.list().then((response) => {
         this.setState({
-          
           treeData: response,
         });
       });
@@ -79,11 +33,16 @@ export default class Tree extends Component<{}, any> {
   }
 
   render() {
-    const { newId, newName, searchString, searchFocusIndex, searchFoundCount } = this.state;
+    const {
+      newId,
+      newName,
+      searchString,
+      searchFocusIndex,
+      searchFoundCount,
+    } = this.state;
 
     const getNodeKey = ({ treeIndex }) => treeIndex;
-    
-  
+
     // const handleEditActivity = (activity: ILocality) => {
     //   agents.Localities.edit(activity).then(() => {
     //     setActivities([
@@ -94,7 +53,7 @@ export default class Tree extends Component<{}, any> {
     //     setEditMode(false);
     //   });
     // };
-  
+
     // const handleDeleteActivity = (id: string) => {
     //   agents.Localities.delete(id).then(() => {
     //     setActivities([...activities.filter((t) => t.id !== id)]);
@@ -104,11 +63,13 @@ export default class Tree extends Component<{}, any> {
     // };
 
     // Case insensitive search of `node.title`
-    const customSearchMethod = ({ node, searchQuery }: SearchData) =>
-      {
-        return searchQuery &&
-          node.title.toString().toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;
-      };
+    const customSearchMethod = ({ node, searchQuery }: SearchData) => {
+      return (
+        searchQuery &&
+        node.title.toString().toLowerCase().indexOf(searchQuery.toLowerCase()) >
+          -1
+      );
+    };
 
     const selectPrevMatch = () =>
       this.setState({
@@ -129,32 +90,28 @@ export default class Tree extends Component<{}, any> {
     return (
       <div>
         <label style={{ marginTop: "1em" }}>
-        Новый Id:
+          Новый Id:
           <input
             id="new-id"
             type="text"
             placeholder="new id..."
-            style={{ fontSize: "1rem", marginTop: "1em", marginLeft: "10px"}}
+            style={{ fontSize: "1rem", marginTop: "1em", marginLeft: "10px" }}
             value={newId}
-            onChange={(event) =>
-              this.setState({ newId: event.target.value })
-            }
+            onChange={(event) => this.setState({ newId: event.target.value })}
           />
         </label>
         <label style={{ marginTop: "1em" }}>
-        Новое имя:
+          Новое имя:
           <input
             id="new-locality"
             type="text"
             placeholder="new locality..."
-            style={{ fontSize: "1rem", marginTop: "1em", marginLeft: "10px"}}
+            style={{ fontSize: "1rem", marginTop: "1em", marginLeft: "10px" }}
             value={newName}
-            onChange={(event) =>
-              this.setState({ newName: event.target.value })
-            }
+            onChange={(event) => this.setState({ newName: event.target.value })}
           />
         </label>
-        <br/>    
+        <br />
         <form
           style={{ display: "inline-block", marginTop: "1em" }}
           onSubmit={(event) => {
@@ -200,53 +157,52 @@ export default class Tree extends Component<{}, any> {
           <SortableTree
             treeData={this.state.treeData}
             onChange={(treeData) => this.setState({ treeData })}
-
             generateNodeProps={({ node, path }) => ({
               buttons: [
                 <button
                   onClick={() => {
-                    
-                    let locality : ILocality = {
-                      id : this.state.newId,
+                    let locality: ILocality = {
+                      id: this.state.newId,
                       title: this.state.newName,
-                      parentId: this.state.treeData[path[path.length - 1]].id
+                      parentId: this.state.treeData[path[path.length - 1]].id,
                     };
-                    
+
                     agents.Localities.add(locality).then(() => {
-                      this.setState(state => ({
+                      this.setState((state) => ({
                         treeData: addNodeUnderParent({
                           treeData: state.treeData,
                           parentKey: path[path.length - 1],
                           expandParent: true,
                           getNodeKey,
                           newNode: {
-                            title : state.newName
+                            title: state.newName,
                           },
                           addAsFirstChild: state.addAsFirstChild,
                         }).treeData,
-                    }))
-                  
-                  })
-                }}
+                      }));
+                    });
+                  }}
                 >
                   Add Child
                 </button>,
                 <button
-                  onClick={() =>
-                    this.setState(state => ({
-                      treeData: removeNodeAtPath({
-                        treeData: state.treeData,
-                        path,
-                        getNodeKey,
-                      }),
-                    }))
-                  }
+                  onClick={() => {
+                    let id = node.id;
+                    agents.Localities.delete(id).then(() => {
+                      this.setState((state) => ({
+                        treeData: removeNodeAtPath({
+                          treeData: state.treeData,
+                          path,
+                          getNodeKey,
+                        }),
+                      }));
+                    });
+                  }}
                 >
                   Remove
                 </button>,
               ],
             })}
-            
             //
             // Custom comparison for matching during search.
             // This is optional, and defaults to a case sensitive search of
@@ -276,9 +232,10 @@ export default class Tree extends Component<{}, any> {
           />
         </div>
 
-        <button style={{ marginTop: "1em" }}
+        <button
+          style={{ marginTop: "1em" }}
           onClick={() =>
-            this.setState(state => ({
+            this.setState((state) => ({
               treeData: state.treeData.concat({
                 title: state.newName,
               }),

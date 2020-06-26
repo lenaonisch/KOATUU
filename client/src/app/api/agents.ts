@@ -27,6 +27,7 @@ const Activities = {
 const Localities = {
     list: () : Promise<ILocality[]> => requests.get('/localities'),
     add: (item: ILocality) => requests.post('/localities', item),
+    delete: (id: number) => requests.delete('/localities/'+ id)
 }
 
 export default {
