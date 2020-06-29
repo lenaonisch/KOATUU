@@ -63,20 +63,20 @@ const App = () => {
   //     });
   // }, []);
 
-  useEffect(() => {
-    agents.Localities.list().then((response) => {
-      let newLoc: ILocality[] = [];
-      response.forEach((loc) => {
-        loc.expanded = false;
-        newLoc.push(loc);
-      });
-      setTreeData(newLoc);
-    });
-  }, []);
+  // useEffect(() => {
+  //   agents.Localities.list().then((response) => {
+  //     let newLoc: ILocality[] = [];
+  //     response.forEach((loc) => {
+  //       loc.expanded = false;
+  //       newLoc.push(loc);
+  //     });
+  //     setTreeData(newLoc);
+  //   });
+  // }, []);
 
   return (
-    <Fragment>
-      <Container>
+    // <Fragment>
+       <Container>
         {/* <NavBar openCreateForm={handelCreateEditForm}/> */}
         <Tree />
         {/* <ActivityDashboard
@@ -90,8 +90,8 @@ const App = () => {
           editActivity={handleEditActivity}
           deleteActivity={handleDeleteActivity}
         /> */}
-      </Container>
-    </Fragment>
+       </Container>
+    // </Fragment>
   );
 };
 

@@ -5,6 +5,7 @@ import SortableTree, {
   addNodeUnderParent,
   removeNodeAtPath,
   changeNodeAtPath,
+  find,
 } from "react-sortable-tree";
 import "react-sortable-tree/style.css"; // This only needs to be imported once in your app
 import { ILocality } from "../../app/models/locality";
@@ -20,6 +21,7 @@ export default class Tree extends Component<{}, any> {
       searchFocusIndex: 0,
       searchFoundCount: null,
       treeData: [],
+      searchMatches:[]
     };
   }
 
@@ -32,12 +34,10 @@ export default class Tree extends Component<{}, any> {
       });
     }
   }
+  
 
   render() {
     const {
-      newId,
-      newName,
-      newCategory,
       searchString,
       searchFocusIndex,
       searchFoundCount,
@@ -87,9 +87,38 @@ export default class Tree extends Component<{}, any> {
             placeholder="Search..."
             style={{ fontSize: "1rem" }}
             value={searchString}
-            onChange={(event) =>
-              this.setState({ searchString: event.target.value })
-            }
+            onChange={(event) => {
+              // console.log( find({
+              //   getNodeKey,
+              //   treeData: this.state.treeData,
+              //   searchQuery: event.target.value,
+              //   searchMethod: customSearchMethod,
+              //   searchFocusOffset: 0,
+              //   expandAllMatchPaths: true
+              // }));
+              this.setState({ 
+                searchMatches:
+                  find({
+                    getNodeKey,
+                    treeData: this.state.treeData,
+                    searchQuery: event.target.value,
+                    searchMethod: customSearchMethod,
+                    searchFocusOffset: 0,
+                    expandAllMatchPaths: true
+                  }).matches, 
+                searchString: event.target.value,
+                
+                //   treeData: find({
+                //     getNodeKey,
+                //     treeData: this.state.treeData,
+                //     searchQuery: this.state.searchString,
+                //     searchMethod: customSearchMethod,
+                //     searchFocusOffset: 0,
+                //     expandAllMatchPaths: true
+                // }).treeData
+              
+             })
+            }}
           />
 
           <button
@@ -122,7 +151,8 @@ export default class Tree extends Component<{}, any> {
             onChange={(treeData) => this.setState({ treeData })}
             rowHeight={100}
             generateNodeProps={({ node, path }) => ({
-              
+              //isSearchMatch: customSearchMethod({node, searchQuery}),
+              //isSearchMatch: true,
               title: (
                 <div style={{ alignItems: "center" }}>
                   <label style={{ marginTop: "1em" }}>
@@ -253,6 +283,7 @@ export default class Tree extends Component<{}, any> {
                 <button
                   onClick={() => {
                     let id = node.id;
+
                     agents.Localities.delete(id).then(() => {
                       this.setState((state) => ({
                         treeData: removeNodeAtPath({

@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { IActivity } from '../models/activity';
 import { ILocality } from '../models/locality';
 
-axios.defaults.baseURL = "http://localhost:5000/api";
+axios.defaults.baseURL = "http://localhost:5002/api";
 
 const responseBody = (response: AxiosResponse) => response.data;
 
