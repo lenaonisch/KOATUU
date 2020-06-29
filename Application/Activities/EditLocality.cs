@@ -12,7 +12,7 @@ namespace Application.Activities
         public class Command : IRequest
         {
             public long Id { get; set; }
-            public string Title { get; set; }
+            public string LocalityName { get; set; }
             public char? Category { get; set; }
             public long? ParentId { get; set; }
         }
@@ -34,7 +34,7 @@ namespace Application.Activities
                    throw new Exception($"Can't find locality with Id {request.Id}");
                 }
 
-                locality.Title = request.Title ?? locality.Title;
+                locality.LocalityName = request.LocalityName ?? locality.LocalityName;
                 locality.Category = request.Category ?? locality.Category;
                 locality.ParentId = request.ParentId ?? locality.ParentId;
                 

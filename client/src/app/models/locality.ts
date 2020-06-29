@@ -1,6 +1,6 @@
 export interface ILocality {
     id: number;
-    title: string;
+    localityName: string;
     category: string;
     expanded? : boolean;
     children? : ILocality[];

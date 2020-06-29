@@ -14,7 +14,7 @@ namespace Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.0.0");
+                .HasAnnotation("ProductVersion", "3.1.5");
 
             modelBuilder.Entity("Domain.Locality", b =>
                 {
@@ -24,11 +24,11 @@ namespace Persistence.Migrations
                     b.Property<char?>("Category")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("LocalityName")
+                        .HasColumnType("TEXT");
+
                     b.Property<long?>("ParentId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -40,46 +40,46 @@ namespace Persistence.Migrations
                         new
                         {
                             Id = 1L,
-                            Title = "Title1"
+                            LocalityName = "Title1"
                         },
                         new
                         {
                             Id = 11L,
                             Category = 'С',
-                            ParentId = 1L,
-                            Title = "Child11"
+                            LocalityName = "Child11",
+                            ParentId = 1L
                         },
                         new
                         {
                             Id = 111L,
-                            ParentId = 11L,
-                            Title = "Child111"
+                            LocalityName = "Child111",
+                            ParentId = 11L
                         },
                         new
                         {
                             Id = 12L,
                             Category = 'Щ',
-                            ParentId = 1L,
-                            Title = "Child12"
+                            LocalityName = "Child12",
+                            ParentId = 1L
                         },
                         new
                         {
                             Id = 2L,
-                            Title = "Title2"
+                            LocalityName = "Title2"
                         },
                         new
                         {
                             Id = 21L,
                             Category = 'Т',
-                            ParentId = 2L,
-                            Title = "Child21"
+                            LocalityName = "Child21",
+                            ParentId = 2L
                         },
                         new
                         {
                             Id = 22L,
                             Category = 'С',
-                            ParentId = 2L,
-                            Title = "Child22"
+                            LocalityName = "Child22",
+                            ParentId = 2L
                         });
                 });
 

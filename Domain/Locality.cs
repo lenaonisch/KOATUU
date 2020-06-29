@@ -11,7 +11,7 @@ namespace Domain
             Children = new List<Locality>();
         }
         public long Id { get; set; }
-        public string Title { get; set; }
+        public string LocalityName { get; set; }
         public char? Category { get; set; }
 
         public virtual IEnumerable<Locality> Children { get; set; }

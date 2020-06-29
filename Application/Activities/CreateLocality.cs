@@ -12,7 +12,7 @@ namespace Application.Activities
         public class Command : IRequest
         {
             public long Id { get; set; }
-            public string Title { get; set; }
+            public string LocalityName { get; set; }
             public char? Category { get; set; }
             public long? ParentId { get; set; }
         }
@@ -32,7 +32,7 @@ namespace Application.Activities
                    new Locality()
                    {
                        Id = request.Id,
-                       Title = request.Title,
+                       LocalityName = request.LocalityName,
                        Category = request.Category,
                        ParentId = request.ParentId
                    });

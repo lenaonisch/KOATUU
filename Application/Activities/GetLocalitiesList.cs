@@ -11,21 +11,22 @@ namespace Application.Activities
 {
     public class GetLocalitiesList
     {
-        public class Query: IRequest<IList<Locality>> {}
+        public class Query: IRequest<IList<object>> {}
 
-        public class Handler : IRequestHandler<Query, IList<Locality>>
+        public class Handler : IRequestHandler<Query, IList<object>>
         {
             private readonly DataContext _context;
             public Handler(DataContext context)
             {
                 _context = context;
             }
-            public async Task<IList<Locality>> Handle(Query request, 
+            public async Task<IList<object>> Handle(Query request, 
                 CancellationToken cancellationToken)
             {
                 var res = await _context.Localities
                     .Where(x => x.ParentId == null)
-                    .ToListAsync();
+                    
+                    .ToListAsync<object>();
                 return res;
             }
         }

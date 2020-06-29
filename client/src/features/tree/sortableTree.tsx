@@ -49,7 +49,7 @@ export default class Tree extends Component<{}, any> {
     const customSearchMethod = ({ node, searchQuery }: SearchData) => {
       return (
         searchQuery &&
-        node.title.toString().toLowerCase().indexOf(searchQuery.toLowerCase()) >
+        node.localityName.toString().toLowerCase().indexOf(searchQuery.toLowerCase()) >
           -1
       );
     };
@@ -158,16 +158,16 @@ export default class Tree extends Component<{}, any> {
                 <div>
                 <input
                   style={{ fontSize: '1.1rem' }}
-                  value={node.title.toString()}
+                  value={node.localityName}
                   onChange={event => {
                     const value = event.target.value;
-
+                    console.log(node);
                     this.setState(state => ({
                       treeData: changeNodeAtPath({
                         treeData: state.treeData,
                         path,
                         getNodeKey,
-                        newNode: { ...node, title:value },
+                        newNode: { ...node, localityName:value },
                       }),
                     }));
                   }}
@@ -198,9 +198,9 @@ export default class Tree extends Component<{}, any> {
                   onClick={() => {
                     let locality: ILocality = {
                       id: node.id,
-                      title: "",
+                      localityName: node.localityName,
                       category: node.category,
-                      parentId: this.state.treeData[path[path.length - 1]].id,
+                      parentId: this.state.treeData[path[path.length - 1]].parentId,
                     };
 
                     agents.Localities.edit(locality).then(() => {
@@ -211,7 +211,7 @@ export default class Tree extends Component<{}, any> {
                           expandParent: true,
                           getNodeKey,
                           newNode: {
-                            title: state.title,
+                            //localityName: state.localityName,
                           },
                           addAsFirstChild: state.addAsFirstChild,
                         }).treeData,
@@ -225,7 +225,7 @@ export default class Tree extends Component<{}, any> {
                   onClick={() => {
                     let locality: ILocality = {
                       id: this.state.newId,
-                      title: this.state.newName,
+                      localityName: this.state.newName,
                       category: newCategory,
                       parentId: this.state.treeData[path[path.length - 1]].id,
                     };
@@ -238,7 +238,7 @@ export default class Tree extends Component<{}, any> {
                           expandParent: true,
                           getNodeKey,
                           newNode: {
-                            title: state.newName,
+                            localityName: state.newName,
                           },
                           addAsFirstChild: state.addAsFirstChild,
                         }).treeData,
