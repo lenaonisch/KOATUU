@@ -4,6 +4,7 @@ import SortableTree, {
   defaultSearchMethod,
   addNodeUnderParent,
   removeNodeAtPath,
+  changeNodeAtPath,
 } from "react-sortable-tree";
 import "react-sortable-tree/style.css"; // This only needs to be imported once in your app
 import { ILocality } from "../../app/models/locality";
@@ -36,31 +37,13 @@ export default class Tree extends Component<{}, any> {
     const {
       newId,
       newName,
+      newCategory,
       searchString,
       searchFocusIndex,
       searchFoundCount,
     } = this.state;
 
     const getNodeKey = ({ treeIndex }) => treeIndex;
-
-    // const handleEditActivity = (activity: ILocality) => {
-    //   agents.Localities.edit(activity).then(() => {
-    //     setActivities([
-    //       ...activities.filter((t) => t.id !== activity.id),
-    //       activity,
-    //     ]);
-    //     setSelectedActivity(activity);
-    //     setEditMode(false);
-    //   });
-    // };
-
-    // const handleDeleteActivity = (id: string) => {
-    //   agents.Localities.delete(id).then(() => {
-    //     setActivities([...activities.filter((t) => t.id !== id)]);
-    //     setSelectedActivity(null);
-    //     setEditMode(false);
-    //   });
-    // };
 
     // Case insensitive search of `node.title`
     const customSearchMethod = ({ node, searchQuery }: SearchData) => {
@@ -73,6 +56,7 @@ export default class Tree extends Component<{}, any> {
 
     const selectPrevMatch = () =>
       this.setState({
+        
         searchFocusIndex:
           searchFocusIndex !== null
             ? (searchFoundCount + searchFocusIndex - 1) % searchFoundCount
@@ -109,6 +93,17 @@ export default class Tree extends Component<{}, any> {
             style={{ fontSize: "1rem", marginTop: "1em", marginLeft: "10px" }}
             value={newName}
             onChange={(event) => this.setState({ newName: event.target.value })}
+          />
+        </label>
+        <label style={{ marginTop: "1em" }}>
+          Категория:
+          <input
+            id="new-category"
+            type="text"
+            placeholder="new category..."
+            style={{ fontSize: "1rem", marginTop: "1em", marginLeft: "10px" }}
+            value={newCategory}
+            onChange={(event) => this.setState({ newCategory: event.target.value })}
           />
         </label>
         <br />
@@ -158,12 +153,80 @@ export default class Tree extends Component<{}, any> {
             treeData={this.state.treeData}
             onChange={(treeData) => this.setState({ treeData })}
             generateNodeProps={({ node, path }) => ({
+              
+              title: (
+                <div>
+                <input
+                  style={{ fontSize: '1.1rem' }}
+                  value={node.title.toString()}
+                  onChange={event => {
+                    const value = event.target.value;
+
+                    this.setState(state => ({
+                      treeData: changeNodeAtPath({
+                        treeData: state.treeData,
+                        path,
+                        getNodeKey,
+                        newNode: { ...node, title:value },
+                      }),
+                    }));
+                  }}
+                />
+                <br/>
+                </div>
+              ),
+              subtitle: (                 
+                <input
+                  style={{ fontSize: '1em' }}
+                  value={node.category}
+                  onChange={event => {
+                    const value = event.target.value;
+                    
+                    this.setState(state => ({
+                      treeData: changeNodeAtPath({
+                        treeData: state.treeData,
+                        path,
+                        getNodeKey,
+                        newNode: { ...node, category: value },
+                      }),
+                    }));
+                  }}
+                />
+              ),
               buttons: [
+                <button
+                  onClick={() => {
+                    let locality: ILocality = {
+                      id: node.id,
+                      title: "",
+                      category: node.category,
+                      parentId: this.state.treeData[path[path.length - 1]].id,
+                    };
+
+                    agents.Localities.edit(locality).then(() => {
+                      this.setState((state) => ({
+                        treeData: addNodeUnderParent({
+                          treeData: state.treeData,
+                          parentKey: path[path.length - 1],
+                          expandParent: true,
+                          getNodeKey,
+                          newNode: {
+                            title: state.title,
+                          },
+                          addAsFirstChild: state.addAsFirstChild,
+                        }).treeData,
+                      }));
+                    });
+                  }}
+                >
+                  Save
+                </button>,
                 <button
                   onClick={() => {
                     let locality: ILocality = {
                       id: this.state.newId,
                       title: this.state.newName,
+                      category: newCategory,
                       parentId: this.state.treeData[path[path.length - 1]].id,
                     };
 
