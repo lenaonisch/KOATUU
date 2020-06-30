@@ -12,6 +12,25 @@ code {
     monospace;
 }
 
+i.icon {
+  margin-right: -3px !important;
+}
+
 .ui.menu.fixed{
 background: linear-gradient(0.25turn, #3f87a6, #ebf8e1, #f69d3c);
 }
+
+.ui.label.label {
+  width: 83px;
+}
+
+.container .search_controls {
+  display: "inline-block";
+
+}
+
+/*
+    display: flex;
+    margin-left: 17px;
+    align-items: center;
+*/

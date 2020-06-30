@@ -11,6 +11,7 @@ import "react-sortable-tree/style.css"; // This only needs to be imported once i
 import { ILocality } from "../../app/models/locality";
 import agents from "../../app/api/agents";
 import LoadingComponent from "../../app/layout/LoadingComponent";
+import { Button, Icon, Form, Input, Select, Popup } from "semantic-ui-react";
 
 export default class Tree extends Component<{}, any> {
   constructor(props?: any) {
@@ -98,18 +99,32 @@ export default class Tree extends Component<{}, any> {
       
     return (
       
-      <div>
+      <div >
+        <div className='header'>
+        <Button
+          icon='add'
+          color='blue'
+          onClick={() =>
+            this.setState((state) => ({
+              treeData: state.treeData.concat({
+                id: getNewLocalityId(1, 0, Number(this.state.treeData[this.state.treeData.length-1].id)),
+                isNewNode: true,
+                parentId: null
+              }),
+            }))
+          }
+        />
+        
         <form
-          style={{ display: "inline-block", marginTop: "1em" }}
+          style={{ display: "inline-block", marginLeft:'4em' }}
           onSubmit={(event) => {
             event.preventDefault();
           }}
         >
-          <input
+          <Input
             id="find-box"
             type="text"
             placeholder="Search..."
-            style={{ fontSize: "1rem" }}
             value={searchString}
             onChange={(event) => {
               this.setState({ 
@@ -126,30 +141,42 @@ export default class Tree extends Component<{}, any> {
               })
             }}
           />
-
-          <button
+        <Button.Group style={{marginLeft:'2px'}}>
+          <Button
             type="button"
+            icon='left arrow'
             disabled={!searchFoundCount}
             onClick={selectPrevMatch}
-          >
-            &lt;
-          </button>
+          />
 
-          <button
+          <Button
             type="submit"
+            icon='right arrow'
             disabled={!searchFoundCount}
             onClick={selectNextMatch}
-          >
-            &gt;
-          </button>
-
+          />
+          </Button.Group>
           <span>
             &nbsp;
             {searchFoundCount > 0 ? searchFocusIndex + 1 : 0}
             &nbsp;/&nbsp;
             {searchFoundCount || 0}
           </span>
-        </form>
+
+          <Button
+          style={{ marginTop: "1em" , marginLeft: "2em"}}
+          onClick={() =>
+            agents.Localities.file(
+              this.state.searchMatches.map(item => item.node.id)).then((response) => {
+                var fileDownload = require('js-file-download');
+                fileDownload(response, 'filename.pdf');
+              })
+            }
+        >
+          Export
+        </Button>
+        </form> 
+        </div>
 
         <div style={{ height: '85vh' }}>
           <SortableTree
@@ -163,41 +190,26 @@ export default class Tree extends Component<{}, any> {
             generateNodeProps={({ node, path }) => ({
               title: (
                 <div style={{ alignItems: "center" }}>
-                  <label style={{ marginTop: "1em" }}>
-                    Name:
-                    <input
-                      style={{ fontSize: "1.1rem" }}
-                      value={node.localityName}
-                      onChange={(event) => {
-                        const value = event.target.value;
-                        console.log(node);
-                        this.setState((state) => ({
-                          treeData: changeNodeAtPath({
-                            treeData: state.treeData,
-                            path,
-                            getNodeKey,
-                            newNode: { ...node, localityName: value },
-                          }),
-                        }));
-                      }}
+                  <Input 
+                    label='Name'
+                    placeholder='New name...'
+                    value={node.localityName}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      this.setState((state) => ({
+                        treeData: changeNodeAtPath({
+                          treeData: state.treeData,
+                          path,
+                          getNodeKey,
+                          newNode: { ...node, localityName: value },
+                        }),
+                      }));
+                    }}
                     />
-                  </label>
-                  <br />
-
-                  <label style={{ marginTop: "1em" }}>
-                    Id:
-                    <input 
-                      style={{ fontSize: "1em"}} 
-                      value={node.id} 
-                      readOnly={true}
-                    />
-                  </label>
-                  <br />
-                  <label style={{ marginTop: "1em" }}>
-                    Category:
-                    <input
-                      style={{ fontSize: "1em" }}
-                      value={node.category}
+                  <br/>
+                  <Input 
+                    label='Category'
+                    value={node.category}
                       onChange={(event) => {
                         const value = event.target.value;
 
@@ -211,12 +223,44 @@ export default class Tree extends Component<{}, any> {
                         }));
                       }}
                     />
-                  </label>
                 </div>
               ),
 
               buttons: [
-                <button
+                <Button.Group>
+                   <Popup
+                    pinned
+                    on='click'
+                    trigger={<Button>...</Button>}>
+                  <Popup.Header><Input 
+                    label='Category' 
+                    size='mini'
+                    value={node.category}
+                      onChange={(event) => {
+                        const value = event.target.value;
+
+                        this.setState((state) => ({
+                          treeData: changeNodeAtPath({
+                            treeData: state.treeData,
+                            path,
+                            getNodeKey,
+                            newNode: { ...node, category: value },
+                          }),
+                        }));
+                      }}
+                    /></Popup.Header>
+                  <Popup.Content>
+                    <Input 
+                    label='Id' 
+                    size='mini'
+                    value={node.id} 
+                    readOnly={true}
+                    />
+                  </Popup.Content>
+                </Popup>
+                    
+                  <Button
+                  positive
                   onClick={() => {
                     let locality: ILocality = {
                       id: node.id,
@@ -252,10 +296,11 @@ export default class Tree extends Component<{}, any> {
                       });
                     }
                   }}
-                >
-                  Save
-                </button>,
-                <button
+                  >
+                    <Icon name='save'/>
+                  </Button>
+                  <Button
+                  color='blue'
                   onClick={() => {
                     let lastChildId = node.children.length == 0? 0: node.children[node.children.length-1].id;
                     let newLocalityId = getNewLocalityId(path.length + 1, Number(node.id), Number(lastChildId));
@@ -276,10 +321,11 @@ export default class Tree extends Component<{}, any> {
                       }).treeData,
                     }));
                   }}
-                >
-                  Add Child
-                </button>,
-                <button
+                  >
+                    +<Icon name='level down'/>
+                  </Button>
+                  <Button
+                  negative
                   onClick={() => {
                     let id = node.id;
 
@@ -293,9 +339,10 @@ export default class Tree extends Component<{}, any> {
                       }));
                     });
                   }}
-                >
-                  Remove
-                </button>,
+                  >
+                    <Icon name='remove'/>
+                  </Button>
+                </Button.Group>
               ],
             })}
             //
@@ -325,34 +372,6 @@ export default class Tree extends Component<{}, any> {
               })
             }
           />
-        </div>
-        <div  style={{ height: '5vh' }}>
-        <button
-          style={{ marginTop: "1em" }}
-          onClick={() =>
-            this.setState((state) => ({
-              treeData: state.treeData.concat({
-                id: getNewLocalityId(1, 0, Number(this.state.treeData[this.state.treeData.length-1].id)),
-                isNewNode: true,
-                parentId: null
-              }),
-            }))
-          }
-        >
-          Add more
-        </button>
-        <button
-          style={{ marginTop: "1em" , marginLeft: "2em"}}
-          onClick={() =>
-            agents.Localities.file(
-              this.state.searchMatches.map(item => item.node.id)).then((response) => {
-                var fileDownload = require('js-file-download');
-                fileDownload(response, 'filename.pdf');
-              })
-            }
-        >
-          Export
-        </button>
         </div>
       </div>
     );
