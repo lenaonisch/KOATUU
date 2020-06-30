@@ -46,7 +46,28 @@ export default class Tree extends Component<{}, any> {
     } = this.state;
 
     const getNodeKey = ({ treeIndex }) => treeIndex;
+ 
+    const getNewLocalityId = (level: number, parentId: number, lastChildId: number) => {
+      var multiplier = 0;
+      switch (level){
+        case 1:
+          multiplier = 100000000;
+          break;
+        case 2:
+          multiplier = 100000;
+          break;
+        case 3:
+          multiplier = 100;
+          break;
+        case 4:
+          multiplier = 1;
+          break;
+      }
+      var newId = lastChildId == 0? parentId + multiplier: lastChildId + multiplier;
+      var leadingZero = (newId.toString().length < 10) ? '0' : '';
 
+      return leadingZero + newId
+    }
     // Case insensitive search of `node.title`
     const customSearchMethod = ({ node, searchQuery }: SearchData) => {
       return (
@@ -166,20 +187,9 @@ export default class Tree extends Component<{}, any> {
                   <label style={{ marginTop: "1em" }}>
                     Id:
                     <input 
-                      style={{ fontSize: "1em" }} 
+                      style={{ fontSize: "1em"}} 
                       value={node.id} 
-                      onChange={(event) => {
-                        const value = event.target.value;
-
-                        this.setState((state) => ({
-                          treeData: changeNodeAtPath({
-                            treeData: state.treeData,
-                            path,
-                            getNodeKey,
-                            newNode: { ...node, id: value },
-                          }),
-                        }));
-                      }}
+                      readOnly={true}
                     />
                   </label>
                   <br />
@@ -247,6 +257,8 @@ export default class Tree extends Component<{}, any> {
                 </button>,
                 <button
                   onClick={() => {
+                    let lastChildId = node.children.length == 0? 0: node.children[node.children.length-1].id;
+                    let newLocalityId = getNewLocalityId(path.length + 1, Number(node.id), Number(lastChildId));
                     this.setState((state) => ({
                       treeData: addNodeUnderParent({
                         treeData: state.treeData,
@@ -256,8 +268,8 @@ export default class Tree extends Component<{}, any> {
                         newNode: {
                           localityName: "",
                           category: "",
-                          id: null,
-                          parentId: this.state.treeData[path[path.length - 1]].id,
+                          id: newLocalityId,
+                          parentId: node.id,
                           isNewNode:true
                         },
                         addAsFirstChild: state.addAsFirstChild,
@@ -320,7 +332,7 @@ export default class Tree extends Component<{}, any> {
           onClick={() =>
             this.setState((state) => ({
               treeData: state.treeData.concat({
-                title: state.newName,
+                id: getNewLocalityId(1, 0, Number(this.state.treeData[this.state.treeData.length-1].id)),
                 isNewNode: true,
                 parentId: null
               }),

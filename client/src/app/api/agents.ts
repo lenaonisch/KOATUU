@@ -16,7 +16,7 @@ const requests = {
     post: (url: string, item: ILocality) => axios.post(url, item)./*then(sleep(1000)).*/then(responseBody),
     put: (url: string, item: ILocality) => axios.put(url, item)./*then(sleep(1000)).*/then(responseBody),
     delete: (url: string) => axios.delete(url)./*then(sleep(1000)).*/then(responseBody),
-    getParametrized: (url: string, item: number[]) => axios.get(
+    getParametrized: (url: string, item: string[]) => axios.get(
         url, 
         {
             params: { locality: item}, 
@@ -40,7 +40,7 @@ const Localities = {
     add: (item: ILocality) => requests.post('/localities', item),
     edit: (item: ILocality) => requests.put('/localities', item),
     delete: (id: number) => requests.delete('/localities/'+ id),
-    file: (items: number[]) => requests.getParametrized('http://localhost:5002/export', items)
+    file: (items: string[]) => requests.getParametrized('http://localhost:5002/export', items)
 }
 
 export default {

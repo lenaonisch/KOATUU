@@ -12,13 +12,13 @@ namespace Application.Activities
     {
         public class Query : IRequest<IList<Locality>>
         {
-            public Query(long[] ids)
+            public Query(string[] ids)
             {
-                Ids = new long[ids.Length];
+                Ids = new string[ids.Length];
                 ids.CopyTo(Ids, 0);
             }
 
-            public long[] Ids { get; set; }
+            public string[] Ids { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, IList<Locality>>

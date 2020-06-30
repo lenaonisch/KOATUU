@@ -10,10 +10,10 @@ namespace Persistence.Migrations
                 name: "Localities",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false),
+                    Id = table.Column<string>(nullable: false),
                     LocalityName = table.Column<string>(nullable: true),
                     Category = table.Column<char>(nullable: true),
-                    ParentId = table.Column<long>(nullable: true)
+                    ParentId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,37 +29,37 @@ namespace Persistence.Migrations
             migrationBuilder.InsertData(
                 table: "Localities",
                 columns: new[] { "Id", "Category", "LocalityName", "ParentId" },
-                values: new object[] { 1L, null, "Title1", null });
+                values: new object[] { "0100000000", null, "Title1", null });
 
             migrationBuilder.InsertData(
                 table: "Localities",
                 columns: new[] { "Id", "Category", "LocalityName", "ParentId" },
-                values: new object[] { 2L, null, "Title2", null });
+                values: new object[] { "0200000000", null, "Title2", null });
 
             migrationBuilder.InsertData(
                 table: "Localities",
                 columns: new[] { "Id", "Category", "LocalityName", "ParentId" },
-                values: new object[] { 11L, 'С', "Child11", 1L });
+                values: new object[] { "0100100000", 'С', "Child11", "0100000000" });
 
             migrationBuilder.InsertData(
                 table: "Localities",
                 columns: new[] { "Id", "Category", "LocalityName", "ParentId" },
-                values: new object[] { 12L, 'Щ', "Child12", 1L });
+                values: new object[] { "0100200000", 'Щ', "Child12", "0100000000" });
 
             migrationBuilder.InsertData(
                 table: "Localities",
                 columns: new[] { "Id", "Category", "LocalityName", "ParentId" },
-                values: new object[] { 21L, 'Т', "Child21", 2L });
+                values: new object[] { "0200100000", 'Т', "Child21", "0200000000" });
 
             migrationBuilder.InsertData(
                 table: "Localities",
                 columns: new[] { "Id", "Category", "LocalityName", "ParentId" },
-                values: new object[] { 22L, 'С', "Child22", 2L });
+                values: new object[] { "0200200000", 'С', "Child22", "0200000000" });
 
             migrationBuilder.InsertData(
                 table: "Localities",
                 columns: new[] { "Id", "Category", "LocalityName", "ParentId" },
-                values: new object[] { 111L, null, "Child111", 11L });
+                values: new object[] { "0100100100", null, "Child111", "0100100000" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Localities_ParentId",

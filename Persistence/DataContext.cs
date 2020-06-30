@@ -16,13 +16,13 @@ namespace Persistence
             modelBuilder.ApplyConfiguration(new LocalityConfiguration());
 
             modelBuilder.Entity<Locality>().HasData(
-                new Locality() { Id = 1, LocalityName = "Title1" },
-                new Locality() { Id = 11, LocalityName = "Child11", Category = 'Ñ' , ParentId = 1},
-                new Locality() { Id = 111, LocalityName = "Child111", ParentId = 11},
-                new Locality() { Id = 12, LocalityName = "Child12", Category = 'Ù', ParentId = 1 },
-                new Locality() { Id = 2, LocalityName = "Title2" },
-                new Locality() { Id = 21, LocalityName = "Child21", Category = 'Ò', ParentId = 2 },
-                new Locality() { Id = 22, LocalityName = "Child22", Category = 'Ñ', ParentId = 2 }
+                new Locality() { Id = "0100000000", LocalityName = "Title1" },
+                new Locality() { Id = "0100100000", LocalityName = "Child11", Category = 'Ñ' , ParentId = "0100000000" },
+                new Locality() { Id = "0100100100", LocalityName = "Child111", ParentId = "0100100000" },
+                new Locality() { Id = "0100200000", LocalityName = "Child12", Category = 'Ù', ParentId = "0100000000" },
+                new Locality() { Id = "0200000000", LocalityName = "Title2" },
+                new Locality() { Id = "0200100000", LocalityName = "Child21", Category = 'Ò', ParentId = "0200000000" },
+                new Locality() { Id = "0200200000", LocalityName = "Child22", Category = 'Ñ', ParentId = "0200000000" }
             );
         }
     }

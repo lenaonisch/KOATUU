@@ -11,10 +11,10 @@ namespace Application.Activities
     {
         public class Command : IRequest
         {
-            public long Id { get; set; }
+            public string Id { get; set; }
             public string LocalityName { get; set; }
             public char? Category { get; set; }
-            public long? ParentId { get; set; }
+            public string ParentId { get; set; }
         }
 
         public class Handler : IRequestHandler<Command>

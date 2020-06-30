@@ -1,8 +1,8 @@
 export interface ILocality {
-    id: number;
+    id: string;
     localityName: string;
     category: string;
     expanded? : boolean;
     children? : ILocality[];
-    parentId? : number;
+    parentId? : string;
 }

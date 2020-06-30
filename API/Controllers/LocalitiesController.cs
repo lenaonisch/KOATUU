@@ -47,14 +47,14 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<MediatR.Unit>> Delete(long id)
+        public async Task<ActionResult<MediatR.Unit>> Delete(string id)
         {
             return Ok(await _mediator.Send(new DeleteLocality.Command(id)));
         }
 
         [HttpGet()]
         [Route("/export")]
-        public async Task<IActionResult> FileAsync([FromQuery] long[] locality)
+        public async Task<IActionResult> FileAsync([FromQuery] string[] locality)
         {
             var localities = await _mediator.Send(new GetExport.Query(locality));
 

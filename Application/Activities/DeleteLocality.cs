@@ -10,12 +10,12 @@ namespace Application.Activities
     {
         public class Command : IRequest 
         {
-            public Command(long id)
+            public Command(string id)
             {
                 Id = id;
             }
 
-            public long Id { get; set; }
+            public string Id { get; set; }
         }
 
         public class Handler : IRequestHandler<Command>

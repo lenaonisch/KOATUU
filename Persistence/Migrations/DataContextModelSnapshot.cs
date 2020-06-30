@@ -18,8 +18,8 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Locality", b =>
                 {
-                    b.Property<long>("Id")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<char?>("Category")
                         .HasColumnType("TEXT");
@@ -27,8 +27,8 @@ namespace Persistence.Migrations
                     b.Property<string>("LocalityName")
                         .HasColumnType("TEXT");
 
-                    b.Property<long?>("ParentId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ParentId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -39,47 +39,47 @@ namespace Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1L,
+                            Id = "0100000000",
                             LocalityName = "Title1"
                         },
                         new
                         {
-                            Id = 11L,
+                            Id = "0100100000",
                             Category = 'С',
                             LocalityName = "Child11",
-                            ParentId = 1L
+                            ParentId = "0100000000"
                         },
                         new
                         {
-                            Id = 111L,
+                            Id = "0100100100",
                             LocalityName = "Child111",
-                            ParentId = 11L
+                            ParentId = "0100100000"
                         },
                         new
                         {
-                            Id = 12L,
+                            Id = "0100200000",
                             Category = 'Щ',
                             LocalityName = "Child12",
-                            ParentId = 1L
+                            ParentId = "0100000000"
                         },
                         new
                         {
-                            Id = 2L,
+                            Id = "0200000000",
                             LocalityName = "Title2"
                         },
                         new
                         {
-                            Id = 21L,
+                            Id = "0200100000",
                             Category = 'Т',
                             LocalityName = "Child21",
-                            ParentId = 2L
+                            ParentId = "0200000000"
                         },
                         new
                         {
-                            Id = 22L,
+                            Id = "0200200000",
                             Category = 'С',
                             LocalityName = "Child22",
-                            ParentId = 2L
+                            ParentId = "0200000000"
                         });
                 });
 
