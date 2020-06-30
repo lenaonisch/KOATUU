@@ -151,8 +151,6 @@ export default class Tree extends Component<{}, any> {
             onChange={(treeData) => this.setState({ treeData })}
             rowHeight={100}
             generateNodeProps={({ node, path }) => ({
-              //isSearchMatch: customSearchMethod({node, searchQuery}),
-              //isSearchMatch: true,
               title: (
                 <div style={{ alignItems: "center" }}>
                   <label style={{ marginTop: "1em" }}>
@@ -343,6 +341,17 @@ export default class Tree extends Component<{}, any> {
           Add more
         </button>
         <br />
+        <button
+          style={{ marginTop: "1em" }}
+          onClick={() =>
+            agents.Localities.file(
+              this.state.searchMatches.map(item => item.node.id)).then(() => {
+              console.log('request sent');
+              })
+            }
+        >
+          Export
+        </button>
         {/* <label htmlFor="addAsFirstChild">
           Add new nodes at start
           <input

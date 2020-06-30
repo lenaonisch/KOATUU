@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Application.Activities;
 using Domain;
@@ -45,6 +44,14 @@ namespace API.Controllers
         public async Task<ActionResult<Unit>> Delete(long id)
         {
             return Ok(await _mediator.Send(new DeleteLocality.Command(id)));
+        }
+
+        [HttpGet()]
+        [Route("/export")]
+        public async Task<ActionResult<Unit>> FileAsync([FromQuery] long[] locality)
+        {
+            return Ok(await _mediator.Send(new GetExport.Query(locality)));
+            
         }
     }
 }
