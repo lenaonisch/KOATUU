@@ -10,13 +10,12 @@ import SortableTree, {
 import "react-sortable-tree/style.css"; // This only needs to be imported once in your app
 import { ILocality } from "../../app/models/locality";
 import agents from "../../app/api/agents";
+import LoadingComponent from "../../app/layout/LoadingComponent";
 
 export default class Tree extends Component<{}, any> {
   constructor(props?: any) {
     super(props);
     this.state = {
-      newId: 0,
-      newName: "",
       searchString: "",
       searchFocusIndex: 0,
       searchFoundCount: null,
@@ -31,11 +30,14 @@ export default class Tree extends Component<{}, any> {
         this.setState({
           treeData: response,
         });
-      });
+      }).then(()=>
+        this.setState({
+          loading: false,
+        })
+      );
     }
   }
   
-
   render() {
     const {
       searchString,
@@ -72,8 +74,9 @@ export default class Tree extends Component<{}, any> {
             ? (searchFocusIndex + 1) % searchFoundCount
             : 0,
       });
-
+      
     return (
+      
       <div>
         <form
           style={{ display: "inline-block", marginTop: "1em" }}
@@ -127,11 +130,15 @@ export default class Tree extends Component<{}, any> {
           </span>
         </form>
 
-        <div style={{ height: 400 }}>
+        <div style={{ height: '85vh' }}>
           <SortableTree
             treeData={this.state.treeData}
             onChange={(treeData) => this.setState({ treeData })}
             rowHeight={100}
+            placeholderRenderer={ ()=>
+              <LoadingComponent content={'Loading...'}/>
+            }  
+      
             generateNodeProps={({ node, path }) => ({
               title: (
                 <div style={{ alignItems: "center" }}>
@@ -307,7 +314,7 @@ export default class Tree extends Component<{}, any> {
             }
           />
         </div>
-
+        <div  style={{ height: '5vh' }}>
         <button
           style={{ marginTop: "1em" }}
           onClick={() =>
@@ -322,9 +329,8 @@ export default class Tree extends Component<{}, any> {
         >
           Add more
         </button>
-        <br />
         <button
-          style={{ marginTop: "1em" }}
+          style={{ marginTop: "1em" , marginLeft: "2em"}}
           onClick={() =>
             agents.Localities.file(
               this.state.searchMatches.map(item => item.node.id)).then((response) => {
@@ -335,19 +341,7 @@ export default class Tree extends Component<{}, any> {
         >
           Export
         </button>
-        {/* <label htmlFor="addAsFirstChild">
-          Add new nodes at start
-          <input
-            name="addAsFirstChild"
-            type="checkbox"
-            checked={this.state.addAsFirstChild}
-            onChange={() =>
-              this.setState(state => ({
-                addAsFirstChild: !state.addAsFirstChild,
-              }))
-            }
-          />
-        </label> */}
+        </div>
       </div>
     );
   }
