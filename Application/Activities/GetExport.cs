@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
@@ -13,6 +14,7 @@ namespace Application.Activities
         {
             public Query(long[] ids)
             {
+                Ids = new long[ids.Length];
                 ids.CopyTo(Ids, 0);
             }
 
@@ -29,7 +31,9 @@ namespace Application.Activities
             public async Task<IList<Locality>> Handle(Query request,
                 CancellationToken cancellationToken)
             {
-                return await _context.Localities.ToListAsync();
+                return await _context.Localities
+                    .Where(t => request.Ids.Contains(t.Id))
+                    .ToListAsync();
             }
         }
     }

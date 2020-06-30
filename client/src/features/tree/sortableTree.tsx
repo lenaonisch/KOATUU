@@ -345,8 +345,8 @@ export default class Tree extends Component<{}, any> {
           style={{ marginTop: "1em" }}
           onClick={() =>
             agents.Localities.file(
-              this.state.searchMatches.map(item => item.node.id)).then(() => {
-              console.log('request sent');
+              this.state.searchMatches.map(item => item.node.id)).then((response) => {
+              console.log(response);
               })
             }
         >
