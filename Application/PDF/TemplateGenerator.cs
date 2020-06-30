@@ -6,21 +6,21 @@ namespace Application.PDF
 {
     public class TemplateGenerator
     {
-        public static string GetHTMLString(IList<Locality> localities)
+        public static string GetHTMLString(string header, IList<Locality> localities)
         {
             var sb = new StringBuilder();
-            sb.Append(@"
+            sb.AppendFormat(@"
                         <html>
                             <head>
                             </head>
                             <body>
-                                <div class='header'><h1>This is the generated PDF report!!!</h1></div>
+                                <div class='header'><h1>{0}</h1></div>
                                 <table align='center'>
                                     <tr>
                                         <th>Id</th>
                                         <th>Name</th>
                                         <th>Category</th>
-                                    </tr>");
+                                    </tr>", header);
 
             foreach (var locality in localities)
             {

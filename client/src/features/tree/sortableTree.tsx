@@ -88,14 +88,6 @@ export default class Tree extends Component<{}, any> {
             style={{ fontSize: "1rem" }}
             value={searchString}
             onChange={(event) => {
-              // console.log( find({
-              //   getNodeKey,
-              //   treeData: this.state.treeData,
-              //   searchQuery: event.target.value,
-              //   searchMethod: customSearchMethod,
-              //   searchFocusOffset: 0,
-              //   expandAllMatchPaths: true
-              // }));
               this.setState({ 
                 searchMatches:
                   find({
@@ -107,17 +99,7 @@ export default class Tree extends Component<{}, any> {
                     expandAllMatchPaths: true
                   }).matches, 
                 searchString: event.target.value,
-                
-                //   treeData: find({
-                //     getNodeKey,
-                //     treeData: this.state.treeData,
-                //     searchQuery: this.state.searchString,
-                //     searchMethod: customSearchMethod,
-                //     searchFocusOffset: 0,
-                //     expandAllMatchPaths: true
-                // }).treeData
-              
-             })
+              })
             }}
           />
 
@@ -346,7 +328,8 @@ export default class Tree extends Component<{}, any> {
           onClick={() =>
             agents.Localities.file(
               this.state.searchMatches.map(item => item.node.id)).then((response) => {
-              console.log(response);
+                var fileDownload = require('js-file-download');
+                fileDownload(response, 'filename.pdf');
               })
             }
         >

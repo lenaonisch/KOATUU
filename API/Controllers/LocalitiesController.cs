@@ -65,13 +65,12 @@ namespace API.Controllers
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10 },
                 DocumentTitle = "PDF Report"
-                //Out = Path.Combine(Directory.GetCurrentDirectory(), @"files\Localities_Report.pdf")
             };
 
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
-                HtmlContent = TemplateGenerator.GetHTMLString(localities),
+                HtmlContent = TemplateGenerator.GetHTMLString("Search results report",localities),
                 WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") },
                 HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
                 FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = "Report Footer" }
@@ -84,7 +83,7 @@ namespace API.Controllers
             };
 
             var file = _converter.Convert(pdf);
-            return File(file, "application/pdf");
+            return File(file, "application/pdf", "filename.pdf");
         }
     }
 }

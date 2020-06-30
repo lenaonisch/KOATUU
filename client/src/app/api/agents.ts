@@ -22,7 +22,8 @@ const requests = {
             params: { locality: item}, 
             paramsSerializer: function(params) {
                 return qs.stringify(params, {arrayFormat: 'repeat'})
-            }
+            },
+            responseType: 'blob'
         }
     ).then(responseBody)
 }
