@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import SortableTree, {
   SearchData,
-  defaultSearchMethod,
   addNodeUnderParent,
   removeNodeAtPath,
   changeNodeAtPath,
@@ -11,7 +10,7 @@ import "react-sortable-tree/style.css"; // This only needs to be imported once i
 import { ILocality } from "../../app/models/locality";
 import agents from "../../app/api/agents";
 import LoadingComponent from "../../app/layout/LoadingComponent";
-import { Button, Icon, Form, Input, Select, Popup } from "semantic-ui-react";
+import { Button, Icon, Input, Popup } from "semantic-ui-react";
 
 export default class Tree extends Component<{}, any> {
   constructor(props?: any) {
@@ -72,11 +71,15 @@ export default class Tree extends Component<{}, any> {
     // Case insensitive search of `node.title`
     const customSearchMethod = ({ node, searchQuery }: SearchData) => {
       return (
-        searchQuery &&
+        searchQuery && (
+        (node.category !== null && node.category 
+          .toString()
+          .toLowerCase()
+          .indexOf(searchQuery.toLowerCase()) > -1) ||
         node.localityName
           .toString()
           .toLowerCase()
-          .indexOf(searchQuery.toLowerCase()) > -1
+          .indexOf(searchQuery.toLowerCase()) > -1)
       );
     };
 
@@ -209,6 +212,8 @@ export default class Tree extends Component<{}, any> {
                   <br/>
                   <Input 
                     label='Category'
+                    list='categories'
+                    placeholder='Choose category...'
                     value={node.category}
                       onChange={(event) => {
                         const value = event.target.value;
@@ -223,6 +228,14 @@ export default class Tree extends Component<{}, any> {
                         }));
                       }}
                     />
+                    <datalist id='categories'>
+                      <option value='' />
+                      <option value='С' />
+                      <option value='Щ' />
+                      <option value='Т' />
+                      <option value='М' />
+                      <option value='Р' />
+                    </datalist>
                 </div>
               ),
 
@@ -267,17 +280,11 @@ export default class Tree extends Component<{}, any> {
                     } else {
                       locality.parentId = this.state.treeData[path[path.length - 1]].parentId;
                       agents.Localities.edit(locality).then(() => {
-                        this.setState((state) => ({
-                          treeData: changeNodeAtPath({
-                            treeData: state.treeData,
-                            path: path,
-                            getNodeKey,
-                            newNode: {
-                            },
-                          }),
-                        }));
+                          this.setState((state) => ({
+                         }));
                       });
                     }
+                    
                   }}
                   >
                     <Icon name='save'/>
