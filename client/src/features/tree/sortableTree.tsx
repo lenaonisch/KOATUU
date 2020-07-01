@@ -228,36 +228,19 @@ export default class Tree extends Component<{}, any> {
 
               buttons: [
                 <Button.Group>
-                   <Popup
+                  <Popup
                     pinned
                     on='click'
                     trigger={<Button>...</Button>}>
-                  <Popup.Header><Input 
-                    label='Category' 
-                    size='mini'
-                    value={node.category}
-                      onChange={(event) => {
-                        const value = event.target.value;
-
-                        this.setState((state) => ({
-                          treeData: changeNodeAtPath({
-                            treeData: state.treeData,
-                            path,
-                            getNodeKey,
-                            newNode: { ...node, category: value },
-                          }),
-                        }));
-                      }}
-                    /></Popup.Header>
-                  <Popup.Content>
-                    <Input 
-                    label='Id' 
-                    size='mini'
-                    value={node.id} 
-                    readOnly={true}
-                    />
-                  </Popup.Content>
-                </Popup>
+                    <Popup.Content>
+                      <Input 
+                        label='Id' 
+                        size='mini'
+                        value={node.id} 
+                        readOnly={true}
+                      />
+                    </Popup.Content>
+                  </Popup>
                     
                   <Button
                   positive
@@ -300,6 +283,7 @@ export default class Tree extends Component<{}, any> {
                     <Icon name='save'/>
                   </Button>
                   <Button
+                  disabled= {(path.length > 3)}
                   color='blue'
                   onClick={() => {
                     let lastChildId = node.children.length == 0? 0: node.children[node.children.length-1].id;
