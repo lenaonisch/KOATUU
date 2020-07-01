@@ -5,13 +5,15 @@ import SortableTree, {
   removeNodeAtPath,
   changeNodeAtPath,
   find,
+  TreeItem,
 } from "react-sortable-tree";
 import "react-sortable-tree/style.css"; // This only needs to be imported once in your app
 import { ILocality } from "../../app/models/locality";
 import agents from "../../app/api/agents";
 import LoadingComponent from "../../app/layout/LoadingComponent";
-import { Button, Icon, Input, Popup } from "semantic-ui-react";
 import TreeHeader from "./treeHeader";
+import TreeNodeContent from "./treeNodeContent";
+import TreeNodeButtons from "./treeNodeButtons";
 
 export default class Tree extends Component<{}, any> {
   constructor(props?: any) {
@@ -21,36 +23,38 @@ export default class Tree extends Component<{}, any> {
       searchFoundCount: 0,
       searchFocusIndex: 0,
       treeData: [],
-      searchMatches:[]
+      searchMatches: [],
     };
   }
 
   componentDidMount() {
     if (this.state.treeData.length == 0) {
-      agents.Localities.list().then((response) => {
-        this.setState({
-          treeData: response,
-        });
-      }).then(()=>
-        this.setState({
-          loading: false,
+      agents.Localities.list()
+        .then((response) => {
+          this.setState({
+            treeData: response,
+          });
         })
-      );
+        .then(() =>
+          this.setState({
+            loading: false,
+          })
+        );
     }
   }
-  
+
   render() {
-    const {
-      searchString,
-      searchFoundCount,
-      searchFocusIndex
-    } = this.state;
+    const { searchString, searchFoundCount, searchFocusIndex } = this.state;
 
     const getNodeKey = ({ treeIndex }) => treeIndex;
- 
-    const getNewLocalityId = (level: number, parentId: number, lastChildId: number) => {
+
+    const getNewLocalityId = (
+      level: number,
+      parentId: number,
+      lastChildId: number
+    ) => {
       var multiplier = 0;
-      switch (level){
+      switch (level) {
         case 1:
           multiplier = 100000000;
           break;
@@ -64,23 +68,25 @@ export default class Tree extends Component<{}, any> {
           multiplier = 1;
           break;
       }
-      var newId = lastChildId == 0? parentId + multiplier: lastChildId + multiplier;
-      var leadingZero = (newId.toString().length < 10) ? '0' : '';
+      var newId =
+        lastChildId == 0 ? parentId + multiplier : lastChildId + multiplier;
+      var leadingZero = newId.toString().length < 10 ? "0" : "";
 
-      return leadingZero + newId
-    }
+      return leadingZero + newId;
+    };
     // Case insensitive search of `node.title`
     const customSearchMethod = ({ node, searchQuery }: SearchData) => {
       return (
-        searchQuery && (
-        (node.category != null && node.category 
-          .toString()
-          .toLowerCase()
-          .indexOf(searchQuery.toLowerCase()) > -1) ||
-        node.localityName
-          .toString()
-          .toLowerCase()
-          .indexOf(searchQuery.toLowerCase()) > -1)
+        searchQuery &&
+        ((node.category != null &&
+          node.category
+            .toString()
+            .toLowerCase()
+            .indexOf(searchQuery.toLowerCase()) > -1) ||
+          node.localityName
+            .toString()
+            .toLowerCase()
+            .indexOf(searchQuery.toLowerCase()) > -1)
       );
     };
 
@@ -96,7 +102,7 @@ export default class Tree extends Component<{}, any> {
         }).matches,
         searchString: event.target.value,
       });
-    }
+    };
 
     const addNode = () =>
       this.setState((state) => ({
@@ -109,15 +115,96 @@ export default class Tree extends Component<{}, any> {
           isNewNode: true,
           parentId: null,
         }),
-      }))
+      }));
 
-    const getMatchedIndexes = () => { 
+    const getMatchedIndexes = () => {
       return this.state.searchMatches.map((item) => item.node.id);
-    }
+    };
+
+    const onFieldChanged = (event, node, path, field) => {
+      const value = event.target.value;
+      this.setState((state) => ({
+        treeData: changeNodeAtPath({
+          treeData: state.treeData,
+          path,
+          getNodeKey,
+          newNode: { ...node, [field]: value },
+        }),
+      }));
+    };
+
+    const onAddNode = (node: TreeItem, path: (number | string)[]) => {
+      let lastChildId =
+        node.children.length == 0
+          ? 0
+          : node.children[node.children.length - 1].id;
+      let newLocalityId = getNewLocalityId(
+        path.length + 1,
+        Number(node.id),
+        Number(lastChildId)
+      );
+      this.setState((state) => ({
+        treeData: addNodeUnderParent({
+          treeData: state.treeData,
+          parentKey: path[path.length - 1],
+          expandParent: true,
+          getNodeKey,
+          newNode: {
+            localityName: "",
+            category: "",
+            id: newLocalityId,
+            parentId: node.id,
+            isNewNode: true,
+          },
+          addAsFirstChild: state.addAsFirstChild,
+        }).treeData,
+      }));
+    };
+
+    const onRemoveNode = (node: TreeItem, path: (number | string)[]) => {
+      let id = node.id;
+
+      agents.Localities.delete(id).then(() => {
+        this.setState((state) => ({
+          treeData: removeNodeAtPath({
+            treeData: state.treeData,
+            path,
+            getNodeKey,
+          }),
+        }));
+      });
+    };
+
+    const onSaveNode = (node: TreeItem, path: (number | string)[]) => {
+      let locality: ILocality = {
+        id: node.id,
+        localityName: node.localityName,
+        category: node.category,
+      };
+
+      if (node.isNewNode == true) {
+        locality.parentId = node.parentId;
+
+        agents.Localities.add(locality).then(() => {
+          this.setState((state) => ({
+            treeData: changeNodeAtPath({
+              treeData: state.treeData,
+              path: path,
+              getNodeKey,
+              newNode: { ...node, isNewNode: false },
+            }),
+          }));
+        });
+      } else {
+        locality.parentId = this.state.treeData[path[path.length - 1]].parentId;
+        agents.Localities.edit(locality).then(() => {
+          this.setState((state) => ({}));
+        });
+      }
+    };
 
     return (
-      
-      <div >
+      <div>
         <TreeHeader
           searchFocusIndex={searchFocusIndex}
           searchFoundCount={searchFoundCount}
@@ -126,159 +213,31 @@ export default class Tree extends Component<{}, any> {
           getMatchedIndexes={getMatchedIndexes}
         />
 
-        <div style={{ height: '85vh' }}>
+        <div style={{ height: "85vh" }}>
           <SortableTree
             treeData={this.state.treeData}
             onChange={(treeData) => this.setState({ treeData })}
             rowHeight={100}
-            placeholderRenderer={ ()=>
-              <LoadingComponent content={'Loading...'}/>
-            }  
-      
+            placeholderRenderer={() => (
+              <LoadingComponent content={"Loading..."} />
+            )}
             generateNodeProps={({ node, path }) => ({
               title: (
-                <div style={{ alignItems: "center" }}>
-                  <Input 
-                    label='Name'
-                    placeholder='New name...'
-                    value={node.localityName}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      this.setState((state) => ({
-                        treeData: changeNodeAtPath({
-                          treeData: state.treeData,
-                          path,
-                          getNodeKey,
-                          newNode: { ...node, localityName: value },
-                        }),
-                      }));
-                    }}
-                    />
-                  <br/>
-                  <Input 
-                    label='Category'
-                    list='categories'
-                    placeholder='Choose category...'
-                    value={node.category}
-                      onChange={(event) => {
-                        const value = event.target.value;
-
-                        this.setState((state) => ({
-                          treeData: changeNodeAtPath({
-                            treeData: state.treeData,
-                            path,
-                            getNodeKey,
-                            newNode: { ...node, category: value },
-                          }),
-                        }));
-                      }}
-                    />
-                    <datalist id='categories'>
-                      <option value='' />
-                      <option value='С' />
-                      <option value='Щ' />
-                      <option value='Т' />
-                      <option value='М' />
-                      <option value='Р' />
-                    </datalist>
-                </div>
+                <TreeNodeContent
+                  node={node}
+                  path={path}
+                  onFieldChanged={onFieldChanged}
+                />
               ),
 
               buttons: [
-                <Button.Group>
-                  <Popup
-                    pinned
-                    on='click'
-                    trigger={<Button>...</Button>}>
-                    <Popup.Content>
-                      <Input 
-                        label='Id' 
-                        size='mini'
-                        value={node.id} 
-                        readOnly={true}
-                      />
-                    </Popup.Content>
-                  </Popup>
-                    
-                  <Button
-                  positive
-                  onClick={() => {
-                    let locality: ILocality = {
-                      id: node.id,
-                      localityName: node.localityName,
-                      category: node.category,
-                    };
-
-                    if (node.isNewNode == true) {
-                      locality.parentId = node.parentId;
-                      
-                      agents.Localities.add(locality).then(() => {
-                        this.setState((state) => ({
-                          treeData: changeNodeAtPath({
-                            treeData: state.treeData,
-                            path: path,
-                            getNodeKey,
-                            newNode: { ...node, isNewNode: false },
-                          }),
-                        }));
-                      });
-                    } else {
-                      locality.parentId = this.state.treeData[path[path.length - 1]].parentId;
-                      agents.Localities.edit(locality).then(() => {
-                          this.setState((state) => ({
-                         }));
-                      });
-                    }
-                    
-                  }}
-                  >
-                    <Icon name='save'/>
-                  </Button>
-                  <Button
-                  disabled= {(path.length > 3)}
-                  color='blue'
-                  onClick={() => {
-                    let lastChildId = node.children.length == 0? 0: node.children[node.children.length-1].id;
-                    let newLocalityId = getNewLocalityId(path.length + 1, Number(node.id), Number(lastChildId));
-                    this.setState((state) => ({
-                      treeData: addNodeUnderParent({
-                        treeData: state.treeData,
-                        parentKey: path[path.length - 1],
-                        expandParent: true,
-                        getNodeKey,
-                        newNode: {
-                          localityName: "",
-                          category: "",
-                          id: newLocalityId,
-                          parentId: node.id,
-                          isNewNode:true
-                        },
-                        addAsFirstChild: state.addAsFirstChild,
-                      }).treeData,
-                    }));
-                  }}
-                  >
-                    +<Icon name='level down'/>
-                  </Button>
-                  <Button
-                  negative
-                  onClick={() => {
-                    let id = node.id;
-
-                    agents.Localities.delete(id).then(() => {
-                      this.setState((state) => ({
-                        treeData: removeNodeAtPath({
-                          treeData: state.treeData,
-                          path,
-                          getNodeKey,
-                        }),
-                      }));
-                    });
-                  }}
-                  >
-                    <Icon name='remove'/>
-                  </Button>
-                </Button.Group>
+                <TreeNodeButtons
+                  node={node}
+                  path={path}
+                  onAddNode={onAddNode}
+                  onRemoveNode={onRemoveNode}
+                  onSaveNode={onSaveNode}
+                />,
               ],
             })}
             //
