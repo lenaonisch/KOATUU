@@ -11,14 +11,15 @@ import { ILocality } from "../../app/models/locality";
 import agents from "../../app/api/agents";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import { Button, Icon, Input, Popup } from "semantic-ui-react";
+import TreeHeader from "./treeHeader";
 
 export default class Tree extends Component<{}, any> {
   constructor(props?: any) {
     super(props);
     this.state = {
       searchString: "",
+      searchFoundCount: 0,
       searchFocusIndex: 0,
-      searchFoundCount: null,
       treeData: [],
       searchMatches:[]
     };
@@ -41,8 +42,8 @@ export default class Tree extends Component<{}, any> {
   render() {
     const {
       searchString,
-      searchFocusIndex,
       searchFoundCount,
+      searchFocusIndex
     } = this.state;
 
     const getNodeKey = ({ treeIndex }) => treeIndex;
@@ -72,7 +73,7 @@ export default class Tree extends Component<{}, any> {
     const customSearchMethod = ({ node, searchQuery }: SearchData) => {
       return (
         searchQuery && (
-        (node.category !== null && node.category 
+        (node.category != null && node.category 
           .toString()
           .toLowerCase()
           .indexOf(searchQuery.toLowerCase()) > -1) ||
@@ -83,103 +84,47 @@ export default class Tree extends Component<{}, any> {
       );
     };
 
-    const selectPrevMatch = () =>
+    const onSearchChange = (event) => {
       this.setState({
-        
-        searchFocusIndex:
-          searchFocusIndex !== null
-            ? (searchFoundCount + searchFocusIndex - 1) % searchFoundCount
-            : searchFoundCount - 1,
+        searchMatches: find({
+          getNodeKey,
+          treeData: this.state.treeData,
+          searchQuery: event.target.value,
+          searchMethod: customSearchMethod,
+          searchFocusOffset: 0,
+          expandAllMatchPaths: true,
+        }).matches,
+        searchString: event.target.value,
       });
+    }
 
-    const selectNextMatch = () =>
-      this.setState({
-        searchFocusIndex:
-          searchFocusIndex !== null
-            ? (searchFocusIndex + 1) % searchFoundCount
-            : 0,
-      });
-      
+    const addNode = () =>
+      this.setState((state) => ({
+        treeData: state.treeData.concat({
+          id: getNewLocalityId(
+            1,
+            0,
+            Number(this.state.treeData[this.state.treeData.length - 1].id)
+          ),
+          isNewNode: true,
+          parentId: null,
+        }),
+      }))
+
+    const getMatchedIndexes = () => { 
+      return this.state.searchMatches.map((item) => item.node.id);
+    }
+
     return (
       
       <div >
-        <div className='header'>
-        <Button
-          icon='add'
-          color='blue'
-          onClick={() =>
-            this.setState((state) => ({
-              treeData: state.treeData.concat({
-                id: getNewLocalityId(1, 0, Number(this.state.treeData[this.state.treeData.length-1].id)),
-                isNewNode: true,
-                parentId: null
-              }),
-            }))
-          }
+        <TreeHeader
+          searchFocusIndex={searchFocusIndex}
+          searchFoundCount={searchFoundCount}
+          onSearchChange={onSearchChange}
+          addNode={addNode}
+          getMatchedIndexes={getMatchedIndexes}
         />
-        
-        <form
-          style={{ display: "inline-block", marginLeft:'4em' }}
-          onSubmit={(event) => {
-            event.preventDefault();
-          }}
-        >
-          <Input
-            id="find-box"
-            type="text"
-            placeholder="Search..."
-            value={searchString}
-            onChange={(event) => {
-              this.setState({ 
-                searchMatches:
-                  find({
-                    getNodeKey,
-                    treeData: this.state.treeData,
-                    searchQuery: event.target.value,
-                    searchMethod: customSearchMethod,
-                    searchFocusOffset: 0,
-                    expandAllMatchPaths: true
-                  }).matches, 
-                searchString: event.target.value,
-              })
-            }}
-          />
-        <Button.Group style={{marginLeft:'2px'}}>
-          <Button
-            type="button"
-            icon='left arrow'
-            disabled={!searchFoundCount}
-            onClick={selectPrevMatch}
-          />
-
-          <Button
-            type="submit"
-            icon='right arrow'
-            disabled={!searchFoundCount}
-            onClick={selectNextMatch}
-          />
-          </Button.Group>
-          <span>
-            &nbsp;
-            {searchFoundCount > 0 ? searchFocusIndex + 1 : 0}
-            &nbsp;/&nbsp;
-            {searchFoundCount || 0}
-          </span>
-
-          <Button
-          style={{ marginTop: "1em" , marginLeft: "2em"}}
-          onClick={() =>
-            agents.Localities.file(
-              this.state.searchMatches.map(item => item.node.id)).then((response) => {
-                var fileDownload = require('js-file-download');
-                fileDownload(response, 'filename.pdf');
-              })
-            }
-        >
-          Export
-        </Button>
-        </form> 
-        </div>
 
         <div style={{ height: '85vh' }}>
           <SortableTree
